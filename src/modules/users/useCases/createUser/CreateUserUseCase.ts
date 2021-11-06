@@ -1,5 +1,6 @@
-import { User } from "../../model/User";
-import { IUsersRepository } from "../../repositories/IUsersRepository";
+import { response } from 'express';
+import { User } from '../../model/User';
+import { IUsersRepository } from '../../repositories/IUsersRepository';
 
 interface IRequest {
   name: string;
@@ -10,7 +11,18 @@ class CreateUserUseCase {
   constructor(private usersRepository: IUsersRepository) {}
 
   execute({ email, name }: IRequest): User {
-    // Complete aqui
+    const emailAlreadyExists = this.usersRepository.findByEmail(email);
+
+    if (emailAlreadyExists) {
+      throw new Error('User email already exists!');
+    }
+
+    const user = this.usersRepository.create({
+      name,
+      email,
+    });
+
+    return user;
   }
 }
 
